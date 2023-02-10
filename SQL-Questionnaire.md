@@ -127,42 +127,42 @@ solution: 4
 ### 15) What is the average credit limit of our customers from the USA? (rounded)
 
 ```
-<Your SQL query here>
+SELECT ROUND(AVG(creditLimit),0) FROM customers WHERE country = 'USA';
 ```
 
-solution: `<your solution here>`
+solution: 78.103
 
 ### 16) What is the most common last name from our customers?
 
 ```
-<Your SQL query here>
+SELECT contactLastName, COUNT(contactLastName) AS sameLastName FROM customers GROUP BY contactLastName ORDER BY sameLastName DESC;
 ```
 
-solution: `<your solution here>`
+solution: Young
 
 ### 17) What are valid statuses of the orders?
 
-- [ ] Resolved
+- [x] Resolved
 
-- [ ] Cancelled
+- [x] Cancelled
 
 - [ ] Broken
 
-- [ ] On Hold
+- [x] On Hold
 
-- [ ] Disputed
+- [x] Disputed
 
-- [ ] In Process
+- [x] In Process
 
 - [ ] Processing
 
-- [ ] Shipped
+- [x] Shipped
 
 ```
-<Your SQL query here>
+SELECT status FROM orders GROUP BY status;
 ```
 
-solution: `<your solution here>`
+solution: ^^^
 
 ### 18) In which countries don't we have any customers?
 
@@ -170,271 +170,284 @@ solution: `<your solution here>`
 
 - [ ] Canada
 
-- [ ] China
+- [x] China
 
 - [ ] Germany
 
-- [ ] Greece
+- [x] Greece
 
 - [ ] Japan
 
 - [ ] Philippines
 
-- [ ] South Korea
+- [x] South Korea
 
 ```
-<Your SQL query here>
+SELECT country FROM customers WHERE country IN ('Austria', 'Canada', 'China', 'Germany', 'Greece', 'Japan', 'Philippines', 'South Korea') GROUP BY country;
 ```
 
-solution: `<your solution here>`
+solution: ^^^
 
 ### 19) How many orders where never shipped?
 
 ```
-<Your SQL query here>
+SELECT COUNT(*) FROM orders WHERE shippedDate IS NULL;
 ```
 
-solution: `<your solution here>`
+solution: 14
 
 ### 20) How many customers does Steve Patterson have with a credit limit above 100 000 EUR?
 
 ```
-<Your SQL query here>
+SELECT COUNT(*) FROM customers INNER JOIN employees ON salesRepEmployeeNumber = employees.employeeNumber
+WHERE employees.lastName = 'Patterson' AND employees.firstName = 'Steve' AND creditLimit > '100000';
 ```
 
-solution: `<your solution here>`
+solution: 3
 
 ### 21) How many orders have been shipped to our customers?
 
 ```
-<Your SQL query here>
+SELECT COUNT(*) FROM orders WHERE shippedDate IS NOT NULL;
 ```
 
-solution: `<your solution here>`
+solution: 312
 
 ### 22) On average, how many products do we have in each product line?
 
 ```
-<Your SQL query here>
+SELECT AVG(products) FROM (SELECT productLine, COUNT(*) AS products FROM products GROUP BY productLine) alias;
 ```
 
-solution: `<your solution here>`
+solution: 15,7143
 
 ### 23) How many products are low in stock? (below 100 pieces)
 
 ```
-<Your SQL query here>
+SELECT * FROM products WHERE quantityInStock < 100;
 ```
 
-solution: `<your solution here>`
+solution: 2
 
 ### 24) How many products have more the 100 pieces in stock, but are below 500 pieces.
 
 ```
-<Your SQL query here>
+SELECT * FROM products WHERE quantityInStock > 100 AND quantityInStock < 500;
 ```
 
-solution: `<your solution here>`
+solution: 3
 
 ### 25) How many orders did we ship between and including June 2004 & September 2004
 
 ```
-<Your SQL query here>
+SELECT COUNT(*) FROM orders WHERE shippedDate BETWEEN '2004-06-01' AND '2004-09-31';
 ```
 
-solution: `<your solution here>`
+solution: 43
 
 ### 26) How many customers share the same last name as an employee of ours?
 
 ```
-<Your SQL query here>
+SELECT * FROM customers INNER JOIN employees ON contactLastName = employees.lastName;
 ```
 
-solution: `<your solution here>`
+solution: 9
 
 ### 27) Give the product code for the most expensive product for the consumer?
 
 ```
-<Your SQL query here>
+SELECT productCode FROM products ORDER BY MSRP DESC LIMIT 1;
 ```
 
-solution: `<your solution here>`
+solution: S10_1949
 
 ### 28) What product (product code) offers us the largest profit margin (difference between buyPrice & MSRP).
 
 ```
-<Your SQL query here>
+SELECT productCode FROM products ORDER BY MSRP-buyPrice DESC LIMIT 1;
 ```
 
-solution: `<your solution here>`
+solution: S10_1949
 
 ### 29) How much profit (rounded) can the product with the largest profit margin (difference between buyPrice & MSRP) bring us.
 
 ```
-<Your SQL query here>
+SELECT MSRP-buyPrice AS profit FROM products ORDER BY profit DESC LIMIT 1;
 ```
 
-solution: `<your solution here>`
+solution: 115,72
 
 ### 30) Given the product number of the products (separated with spaces) that have never been sold?
 
 ```
-<Your SQL query here>
+SELECT productCode
+FROM products
+WHERE NOT EXISTS
+(SELECT *
+   FROM  orderdetails
+   WHERE products.productCode = orderdetails.productCode);
 ```
 
-solution: `<your solution here>`
+solution: S18_3233
 
 ### 31) How many products give us a profit margin below 30 dollar?
 
 ```
-<Your SQL query here>
+SELECT COUNT(*) AS profit FROM products WHERE MSRP-buyPrice < 30;
 ```
 
-solution: `<your solution here>`
+solution: 23
 
 ### 32) What is the product code of our most popular product (in number purchased)?
 
 ```
-<Your SQL query here>
+SELECT productCode, SUM(quantityOrdered) AS ordered  FROM orderdetails GROUP BY productCode ORDER BY ordered DESC LIMIT 1;
 ```
 
-solution: `<your solution here>`
+solution: S18_3232 (1808)
 
 ### 33) How many of our popular product did we effectively ship?
 
 ```
-<Your SQL query here>
+SELECT COUNT(*) FROM orders INNER JOIN orderdetails USING (orderNumber) WHERE
+productCode = (SELECT productCode FROM orderdetails GROUP BY productCode ORDER BY SUM(quantityOrdered) DESC LIMIT 1) AND shippedDate IS NOT NULL;
 ```
 
-solution: `<your solution here>`
+solution: 51
 
 ### 34) Which check number paid for order 10210. Tip: Pay close attention to the date fields on both tables to solve this.
 
 ```
-<Your SQL query here>
+SELECT * FROM orders INNER JOIN payments USING (customerNumber) WHERE orderNumber = '10210';
 ```
 
-solution: `<your solution here>`
+solution: AU750837 & CI381435
 
 ### 35) Which order was paid by check CP804873?
 
 ```
-<Your SQL query here>
+SELECT * FROM orders INNER JOIN payments USING (customerNumber) WHERE checkNumber = 'CP804873';
 ```
 
-solution: `<your solution here>`
+solution: 10108 & 10198 & 10330
 
 ### 36) How many payments do we have above 5000 EUR and with a check number with a 'D' somewhere in the check number, ending the check number with the digit 9?
 
 ```
-<Your SQL query here>
+SELECT COUNT(*) FROM payments WHERE amount > '5000' AND checkNumber LIKE '%D%9';
 ```
 
-solution: `<your solution here>`
+solution: 3
 
 ### 38) In which country do we have the most customers that we do not have an office in?
 
 ```
-<Your SQL query here>
+SELECT COUNT(*) AS custPerCountry, country FROM customers WHERE country NOT IN (SELECT country FROM offices) GROUP BY country ORDER BY custPerCountry DESC LIMIT 1;
 ```
 
-solution: `<your solution here>`
+solution: Germany
 
 ### 39) What city has our biggest office in terms of employees?
 
 ```
-<Your SQL query here>
+SELECT city FROM employees INNER JOIN offices USING (officeCode) GROUP BY city ORDER BY COUNT(*) DESC FETCH FIRST 1 ROW ONLY;
 ```
 
-solution: `<your solution here>`
+solution: San Francisco
 
 ### 40) How many employees does our largest office have, including leadership?
 
 ```
-<Your SQL query here>
+SELECT MAX(T.emplPerOffice) FROM (SELECT COUNT(*) AS emplPerOffice, city FROM employees INNER JOIN offices USING (officeCode) GROUP BY city) T;
 ```
 
-solution: `<your solution here>`
+solution: 6
 
 ### 41) How many employees do we have on average per country (rounded)?
 
 ```
-<Your SQL query here>
+SELECT ROUND(AVG(emplPerCountry),0) FROM (SELECT COUNT(*) AS emplPerCountry, country FROM employees INNER JOIN offices USING (officeCode) GROUP BY country) T;
 ```
 
-solution: `<your solution here>`
+solution: 5
 
 ### 42) What is the total value of all shipped & resolved sales ever combined?
 
 ```
-<Your SQL query here>
+SELECT SUM(priceEach * quantityOrdered) AS total FROM orders INNER JOIN orderdetails USING (orderNumber) WHERE status = 'Shipped' OR status = 'Resolved';
 ```
 
-solution: `<your solution here>`
+solution: 8999330.52
 
 ### 43) What is the total value of all shipped & resolved sales in the year 2005 combined? (based on shipping date)
 
 ```
-<Your SQL query here>
+SELECT SUM(priceEach * quantityOrdered) AS total FROM orders INNER JOIN orderdetails USING (orderNumber) WHERE YEAR(shippedDate) = '2005' AND (status = 'Shipped' OR status = 'Resolved');
 ```
 
-solution: `<your solution here>`
+solution: 1427944.97
 
 ### 44) What was our most profitable year ever (based on shipping date), considering all shipped & resolved orders?
 
 ```
-<Your SQL query here>
+SELECT YEAR(shippedDate) FROM orders WHERE status = 'Shipped' OR status = 'Resolved' GROUP BY YEAR(shippedDate) ORDER BY COUNT(*) DESC LIMIT 1;
 ```
 
-solution: `<your solution here>`
+solution: 2004
 
 ### 45) How much revenue did we make on in our most profitable year ever (based on shipping date), considering all shipped & resolved orders?
 
 ```
-<Your SQL query here>
+SELECT SUM(priceEach * quantityOrdered) AS total, YEAR(shippedDate) FROM orders INNER JOIN orderdetails USING (orderNumber) WHERE status = 'Shipped' OR status = 'Resolved' GROUP BY YEAR(shippedDate) ORDER BY COUNT(*) DESC LIMIT 1;
 ```
 
-solution: `<your solution here>`
+solution: 4321167.85
 
 ### 46) What is the name of our biggest customer in the USA of terms of revenue?
 
 ```
-<Your SQL query here>
+SELECT customerName FROM orders INNER JOIN orderdetails USING (orderNumber) INNER JOIN customers USING (customerNumber) WHERE country = 'USA' AND (status = 'Shipped' OR status = 'Resolved') GROUP BY customerNumber ORDER BY SUM(priceEach * quantityOrdered) DESC LIMIT 1;
 ```
 
-solution: `<your solution here>`
+solution: Mini Gifts Distributors Ltd.
 
 ### 47) How much has our largest customer inside the USA ordered with us (total value)?
 
 ```
-<Your SQL query here>
+SELECT SUM(priceEach * quantityOrdered) AS total FROM orders INNER JOIN orderdetails USING (orderNumber) INNER JOIN customers USING (customerNumber) WHERE country = 'USA' AND (status = 'Shipped' OR status = 'Resolved') GROUP BY customerNumber ORDER BY SUM(priceEach * quantityOrdered) DESC LIMIT 1;
 ```
 
-solution: `<your solution here>`
+solution: 584188.24
 
 ### 48) How many customers do we have that never ordered anything?
 
 ```
-<Your SQL query here>
+SELECT COUNT(*) FROM customers WHERE NOT EXISTS (SELECT * FROM orders WHERE orders.customerNumber = customers.customerNumber);
 ```
 
-solution: `<your solution here>`
+solution: 24
 
 ### 49) What is the last name of our best employee in terms of revenue?
 
 ```
-<Your SQL query here>
+SELECT lastName FROM orders INNER JOIN orderdetails USING (orderNumber) INNER JOIN customers USING (customerNumber) INNER JOIN employees ON customers.salesRepEmployeeNumber = employees.employeeNumber WHERE (status = 'Shipped' OR status = 'Resolved') GROUP BY customerNumber ORDER BY SUM(priceEach * quantityOrdered) DESC LIMIT 1;
 ```
 
-solution: `<your solution here>`
+solution: Hernandez
 
 ### 50) What is the office name of the least profitable office in the year 2004?
 
 ```
-<Your SQL query here>
+SELECT offices.city FROM orders
+INNER JOIN customers USING (customerNumber)
+INNER JOIN employees ON customers.salesRepEmployeeNumber = employees.employeeNumber
+INNER JOIN offices USING (officeCode)
+WHERE YEAR(shippedDate) = '2004' AND (status = 'Shipped' OR status = 'Resolved')
+GROUP BY offices.officeCode
+ORDER BY COUNT(*) ASC LIMIT 1;
 ```
 
-solution: `<your solution here>`
+solution: Tokyo
 
 ## Are you done? Amazing!
 
