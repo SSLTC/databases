@@ -90,7 +90,7 @@ solution: 7
 SELECT COUNT(*) FROM customers WHERE state = 'NY' OR state = 'NV' OR NOT country = 'USA';
 ```
 
-solution: 86
+solution: 93
 
 ### 11) How many customers do we have with the following conditions (only 1 query needed): - Living in the state Nevada or New York OR - Living outside the USA or the customers and with a credit limit above 1000 dollar?
 
@@ -272,10 +272,10 @@ solution: S10_1949
 ### 29) How much profit (rounded) can the product with the largest profit margin (difference between buyPrice & MSRP) bring us.
 
 ```
-SELECT MSRP-buyPrice AS profit FROM products ORDER BY profit DESC LIMIT 1;
+SELECT ROUND(MSRP-buyPrice,0) AS profit FROM products ORDER BY profit DESC LIMIT 1;
 ```
 
-solution: 115,72
+solution: 116
 
 ### 30) Given the product number of the products (separated with spaces) that have never been sold?
 
@@ -309,11 +309,11 @@ solution: S18_3232 (1808)
 ### 33) How many of our popular product did we effectively ship?
 
 ```
-SELECT COUNT(*) FROM orders INNER JOIN orderdetails USING (orderNumber) WHERE
+SELECT SUM(quantityOrdered) FROM orders INNER JOIN orderdetails USING (orderNumber) WHERE
 productCode = (SELECT productCode FROM orderdetails GROUP BY productCode ORDER BY SUM(quantityOrdered) DESC LIMIT 1) AND shippedDate IS NOT NULL;
 ```
 
-solution: 51
+solution: 1760
 
 ### 34) Which check number paid for order 10210. Tip: Pay close attention to the date fields on both tables to solve this.
 
